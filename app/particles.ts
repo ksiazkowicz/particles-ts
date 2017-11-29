@@ -170,7 +170,7 @@ function random(minRange: number, maxRange: number): number {
     return Math.floor((Math.random() * maxRange) + minRange);
 }
 
-var W,H;
+var W: number, H: number;
 var dt = 0.1;
 var g = -9.8;
 
