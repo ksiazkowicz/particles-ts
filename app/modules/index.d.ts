@@ -49,7 +49,6 @@ declare module 'modules/point' {
         bounceY(): void;
         move(dt: number): void;
         accelerate(a: Vector2d): void;
-        draw(canvas: CanvasRenderingContext2D, W: number, H: number): void;
         checkCollision(point: Point): boolean;
         bounceFrom(point: Point): void;
     }
@@ -63,5 +62,15 @@ declare module 'modules/emitter' {
         position: Vector2d;
 
         generate(): Point;
+    }
+}
+
+declare module 'modules/renderer' {
+    import { Point } from 'modules/point';
+
+    export class Poor2DRenderer {
+        canvas: HTMLCanvasElement;
+        constructor(canvas: HTMLCanvasElement, W: number, H: number);
+        render(points: Array<Point>): void;
     }
 }

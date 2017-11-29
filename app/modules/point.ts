@@ -1,7 +1,6 @@
 import { Vector2d, Color } from './types';
 
 export class Point {
-    id: number;
     position: Vector2d;
     velocity: Vector2d;
     radius: number;
@@ -10,8 +9,7 @@ export class Point {
     max_lifetime: number;
     color: Color;
 
-    constructor (id: number, position: Vector2d, radius: number, velocity: Vector2d, lifetime: number) {
-        this.id = id;
+    constructor (position: Vector2d, radius: number, velocity: Vector2d, lifetime: number) {
         this.position = position;
         this.m = radius/20;
         if (this.m < 0.5)
@@ -52,14 +50,8 @@ export class Point {
     accelerate(a: Vector2d): void {
         this.velocity = this.velocity.add(a.divide(this.m));
     }
-    draw(canvas: CanvasRenderingContext2D, W: number, H: number): void {
-        canvas.fillStyle = this.color.getRGBA(this.lifetime/this.max_lifetime);
-        canvas.beginPath();
-        canvas.arc(W-this.position.x,H-this.position.y,this.radius,0,2*Math.PI);
-        canvas.fill();
-    }
     checkCollision(point: Point): boolean {
-        if (point.id == this.id) return false;
+        if (point == this) return false;
         return this.position.subtract(point.position).length() < (this.radius + point.radius);
     }
 

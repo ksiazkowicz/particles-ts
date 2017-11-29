@@ -2,26 +2,20 @@ import { Vector2d, Color } from './modules/types';
 import { Emitter } from "./modules/emitter";
 import { random } from './modules/utils';
 import { Point } from './modules/point';
+import { Poor2DRenderer } from './modules/renderer';
 
 var MAX_TIME: number = 120;
 
-var W: number, H: number;
+var W: number = 1024, H: number = 700;
 var dt = 0.1;
-var g = 0; //-9.8;
 
 // przygotowanie do rysowania
-var canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('mycanvas');
-W=1024;	H=700;
-canvas.width = W; 	
-canvas.height = H;
-var ctx = canvas.getContext('2d');
-
+var renderer = new Poor2DRenderer(<HTMLCanvasElement>document.getElementById('mycanvas'), W, H);
 var points = Array<Point>();
-var i = 0;
 
 var emitters = Array<Emitter>();
-emitters.push(new Emitter(new Vector2d(W/6, H/2), MAX_TIME));
-emitters.push(new Emitter(new Vector2d((W/6)*5, H/2), MAX_TIME));
+emitters.push(new Emitter(new Vector2d(0, H/2), 5, 10, MAX_TIME));
+emitters.push(new Emitter(new Vector2d(W, H/2), 5, 10, MAX_TIME));
 
 var viscosity = 0.00001;
 
@@ -29,18 +23,20 @@ function generate() {
     setTimeout(() => {
         for (let emitter of emitters) {
             let point = emitter.generate();
-            point.id = i;
             points.push(point);
-            i++;
         }
         generate();
-    }, MAX_TIME);
+    }, MAX_TIME/2);
 }
 
-// pętla obliczeniowa i rysująca
-var loop= function() 
+var loop = function() 
 {
-    ctx.clearRect(0,0,W,H);
+    // call renderer
+    renderer.render(points);
+
+    let g = random(0, 9.81*2) - 9.81;
+
+    // handle physics
     for (let point of points) {
         point.move(dt);
 
@@ -61,7 +57,6 @@ var loop= function()
 
         if (point.lifetime > 0) {
             point.lifetime--;
-            point.draw(ctx, W, H);
         } else {
             points.splice(points.indexOf(point), 1);
         }
