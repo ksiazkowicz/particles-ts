@@ -1,0 +1,22 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "declaration": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "lib": ["dom", "dom.iterable", "es5", "es2015", "es2015.iterable"],
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noEmitOnError": true,
+        "outDir": "../build",
+        "sourceMap": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "target": "es3",
+        "allowJs": true,
+        "typeRoots": [
+            "../node_modules/@types",
+            "."
+        ]
+    },
+    "exclude": ["node_modules", ".gitignore", ".git"]
+}

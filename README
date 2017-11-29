@@ -1,0 +1,8 @@
+# particles-ts
+
+## Build
+`npm run build`
+for dev use `npm run build-watch`
+
+## Run
+Just open `index.html`
