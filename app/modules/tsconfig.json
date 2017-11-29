@@ -8,14 +8,12 @@
         "moduleResolution": "node",
         "noImplicitAny": true,
         "noEmitOnError": true,
-        "outDir": "../build",
+        "outDir": "../../build",
         "sourceMap": true,
         "suppressImplicitAnyIndexErrors": true,
         "target": "es3",
-        "allowJs": true,
         "typeRoots": [
-            "../node_modules/@types",
-            "modules/",
+            "../../node_modules/@types",
             "."
         ]
     },
