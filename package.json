@@ -1,11 +1,13 @@
 {
     "dependencies": {
+        "@types/three": "^0.84.34",
         "clean-webpack-plugin": "^0.1.17",
         "css-loader": "^0.28.7",
         "file-loader": "^1.1.5",
         "node-sass": "^4.7.2",
         "sass-loader": "^6.0.6",
         "style-loader": "^0.19.0",
+        "three": "^0.88.0",
         "ts-loader": "^3.1.1",
         "typescript": "2.5.3",
         "url-loader": "^0.6.2",

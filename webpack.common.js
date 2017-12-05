@@ -39,5 +39,8 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['theme/bundles']),
+        new webpack.ProvidePlugin({
+            "three": "three",
+        })
     ]
 };

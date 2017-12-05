@@ -15,6 +15,21 @@ declare module 'modules/types' {
         dot(vector: Vector2d): number;
         normalize(): Vector2d;
     }
+    export class Vector3d {
+        y: number;
+        x: number;
+        z: number;
+    
+        constructor(x: number, y: number, z: number);
+        multiply(scalar: number): Vector3d;
+        divide(scalar: number): Vector3d;
+        subtract(vector: Vector3d): Vector3d;
+        add(vector: Vector3d): Vector2d;
+        length(): number;
+        dot(vector: Vector3d): number;
+        normalize(): Vector3d;
+        convertTo2d(): Vector2d;
+    }
     export class Color {
         r: number;
         g: number;
@@ -28,19 +43,19 @@ declare module 'modules/types' {
 }
 
 declare module 'modules/point' {
-    import { Vector2d, Color } from 'modules/types';
+    import { Vector2d, Vector3d, Color } from 'modules/types';
     
     export class Point {
         id: number;
-        position: Vector2d;
-        velocity: Vector2d;
+        position: Vector3d;
+        velocity: Vector3d;
         radius: number;
         m: number;
         lifetime: number;
         max_lifetime: number;
         color: Color;
     
-        constructor (id: number, position: Vector2d, radius: number, velocity: Vector2d, lifetime: number);
+        constructor (id: number, position: Vector3d, radius: number, velocity: Vector3d, lifetime: number);
     
         setColor(r: number, g: number, b: number): void;
         exitingX(W: number): boolean;
@@ -48,18 +63,18 @@ declare module 'modules/point' {
         bounceX(): void;
         bounceY(): void;
         move(dt: number): void;
-        accelerate(a: Vector2d): void;
+        accelerate(a: Vector3d): void;
         checkCollision(point: Point): boolean;
         bounceFrom(point: Point): void;
     }
 }
 
 declare module 'modules/emitter' {
-    import { Vector2d } from 'modules/types';
+    import { Vector3d } from 'modules/types';
     import { Point } from 'modules/point';
 
     export class Emitter {
-        position: Vector2d;
+        position: Vector3d;
 
         generate(): Point;
     }
@@ -67,6 +82,12 @@ declare module 'modules/emitter' {
 
 declare module 'modules/renderer' {
     import { Point } from 'modules/point';
+
+    export class WebGLRenderer {
+        canvas: HTMLCanvasElement;
+        constructor(canvas: HTMLCanvasElement, W: number, H: number);
+        render(points: Array<Point>): void;
+    }
 
     export class Poor2DRenderer {
         canvas: HTMLCanvasElement;

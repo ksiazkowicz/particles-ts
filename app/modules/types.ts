@@ -30,6 +30,43 @@ export class Vector2d {
     }
 }
 
+export class Vector3d {
+    y: number;
+    x: number;
+    z: number;
+
+    constructor(x: number, y: number, z: number) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    multiply(scalar: number) {
+        return new Vector3d(this.x*scalar, this.y*scalar, this.z*scalar);
+    }
+    divide(scalar: number) {
+        return new Vector3d(this.x/scalar, this.y/scalar, this.z/scalar);
+    }
+    subtract(vector: Vector3d) {
+        return new Vector3d(this.x - vector.x, this.y - vector.y, this.z - vector.z);
+    }
+    add(vector: Vector3d) {
+        return new Vector3d(this.x + vector.x, this.y + vector.y, this.z + vector.z);
+    }
+    length(): number {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+    }
+    dot(vector: Vector3d): number {
+        return (this.x*vector.x) + (this.y*vector.y) + (this.z*vector.z);
+    }
+    normalize() {
+        return this.divide(this.length());
+    }
+    convertTo2d() {
+        return new Vector2d(this.x, this.y);
+    }
+}
+
 export class Color {
     r: number;
     g: number;

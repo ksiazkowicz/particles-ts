@@ -1,15 +1,15 @@
-import { Vector2d, Color } from './types';
+import { Vector3d, Color } from './types';
 
 export class Point {
-    position: Vector2d;
-    velocity: Vector2d;
+    position: Vector3d;
+    velocity: Vector3d;
     radius: number;
     m: number;
     lifetime: number;
     max_lifetime: number;
     color: Color;
 
-    constructor (position: Vector2d, radius: number, velocity: Vector2d, lifetime: number) {
+    constructor (position: Vector3d, radius: number, velocity: Vector3d, lifetime: number) {
         this.position = position;
         this.m = radius/20;
         if (this.m < 0.5)
@@ -37,17 +37,26 @@ export class Point {
         return result;
     }
 
+    exitingZ(D: number): boolean {
+        let result = this.position.z <= this.radius || this.position.z >= D - this.radius;
+        if (result) this.position.z = this.position.z <= this.radius ? this.radius : D - this.radius;
+        return result;
+    }
+
     bounceX(): void {
         this.velocity.x = -this.velocity.x;
     }
     bounceY(): void {
         this.velocity.y = -this.velocity.y;
     }
+    bounceZ(): void {
+        this.velocity.z = -this.velocity.z;
+    }
 
     move(dt: number): void {
         this.position = this.position.add(this.velocity.multiply(dt));
     }
-    accelerate(a: Vector2d): void {
+    accelerate(a: Vector3d): void {
         this.velocity = this.velocity.add(a.divide(this.m));
     }
     checkCollision(point: Point): boolean {
@@ -58,11 +67,11 @@ export class Point {
     bounceFrom(point: Point) {
         // based on https://stackoverflow.com/questions/345838/ball-to-ball-collision-detection-and-handling
         // get the mtd
-        let delta: Vector2d = this.position.subtract(point.position);
+        let delta: Vector3d = this.position.subtract(point.position);
         let d = delta.length();
 
         // minimum translation distance to push balls apart after intersecting
-        let mtd: Vector2d = delta.multiply(((this.radius + point.radius)-d)/d)
+        let mtd: Vector3d = delta.multiply(((this.radius + point.radius)-d)/d)
 
         // resolve intersection --
         // inverse mass quantities
@@ -74,7 +83,7 @@ export class Point {
         point.position = point.position.subtract(mtd.multiply(im2 / (im1 + im2)));
 
         // impact speed
-        let v: Vector2d = this.velocity.subtract(point.velocity);
+        let v: Vector3d = this.velocity.subtract(point.velocity);
         let vn: number = v.dot(mtd.normalize());
 
         // sphere intersecting but moving away from each other already
@@ -82,7 +91,7 @@ export class Point {
 
         // collision impulse
         let i: number = (-(1.0 + 0.8) * vn) / (im1 + im2);
-        let impulse: Vector2d = mtd.normalize().multiply(i);
+        let impulse: Vector3d = mtd.normalize().multiply(i);
 
         // change in momentum
         this.velocity = this.velocity.add(impulse.multiply(im1));
