@@ -51,20 +51,16 @@ export class WebGLRender {
     }
 
     render(points: Array<Point>): void {
-        //this.camera.rotateZ(0.01);
-
-        var nic = new THREE.TextureLoader();
+        this.camera.rotateZ(0.01);
         
         for (let point of points) {
             let sphere = point["sphere"];
             if (point.lifetime/point.max_lifetime > 0.1) {
                 if (point["sphere"] == undefined){
-                    var material = new THREE.SpriteMaterial( 
-                    { 
-                            map: this.glow, 
-                            color: point.color.getRGB(), transparent: true, blending: THREE.AdditiveBlending
-                    });
-                    point["sphere"] = new THREE.Sprite(material);
+                    point["sphere"] = new THREE.Sprite(new THREE.SpriteMaterial({ 
+                        map: this.glow, 
+                        color: point.color.getRGB(), transparent: true, blending: THREE.AdditiveBlending
+                    }));
                     this.scene.add(point["sphere"]);
                 }
                 (<THREE.SpriteMaterial>point["sphere"].material).opacity = point.lifetime/point.max_lifetime;
