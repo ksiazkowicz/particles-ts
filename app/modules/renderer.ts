@@ -9,52 +9,65 @@ export class WebGLRender {
     renderer: THREE.WebGLRenderer;
     camera: THREE.Camera;
     scene: THREE.Scene;
-    sphere: THREE.Mesh;
     fw: number;
     fh: number;
     W: number;
     H: number;
+    D: number;
+    texture_loader: THREE.TextureLoader;
+    glow: THREE.Texture;
 
-    constructor(canvas: HTMLCanvasElement, W: number, H: number) {
+    constructor(canvas: HTMLCanvasElement, W: number, H: number, D: number) {
         this.canvas = canvas;
         this.renderer = new THREE.WebGLRenderer({canvas: canvas});
-        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setPixelRatio( window.devicePixelRatio);
         this.renderer.setSize(W, H);
         this.W = W;
         this.H = H;
-        let fov = 60;
+        this.D = D;
+        let fov = 75;
+
+        this.texture_loader =  new THREE.TextureLoader();
+        this.glow = this.texture_loader.load('textures/glow.png')
 
         this.scene = new THREE.Scene();
         let aspect = this.renderer.context.canvas.width / this.renderer.context.canvas.height;
 
-        this.scene.add(new THREE.HemisphereLight(0xffffff,0xffffff,1.0))
+        this.scene.add(new THREE.HemisphereLight(0xffffff,0xffffff,1.0));
+        //this.scene.add(new THREE.AmbientLight("rgb(200, 32, 60)"));
         this.camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 1000);
-        this.camera.position.set(0,0,30);
 
-        let distance = 15;
+        let distance = D/2;
         this.fh = 2.0 * distance * Math.tan(fov * 0.5 * (Math.PI/180));
         this.fw = this.fh * aspect;
+        this.camera.position.set(0, 0, distance);
 
-        
-        let material = new THREE.MeshBasicMaterial();
-        this.sphere = new THREE.Mesh(new THREE.SphereGeometry(this.fw/W, 32, 32), material);
+        var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.position.set(0, 0, distance);
+        spotLight.castShadow = true;
+        this.scene.add( spotLight );
 
         this.renderer.render(this.scene, this.camera);
     }
 
     render(points: Array<Point>): void {
+        //this.camera.rotateZ(0.01);
+
+        var nic = new THREE.TextureLoader();
+        
         for (let point of points) {
             let sphere = point["sphere"];
             if (point.lifetime/point.max_lifetime > 0.1) {
                 if (point["sphere"] == undefined){
-                    let material = new THREE.MeshPhongMaterial({
-                        "color": point.color.getRGB(), 
+                    var material = new THREE.SpriteMaterial( 
+                    { 
+                            map: this.glow, 
+                            color: point.color.getRGB(), transparent: true, blending: THREE.AdditiveBlending
                     });
-                    material.transparent = true;
-                    point["sphere"] = new THREE.Mesh(this.sphere.geometry, material);
+                    point["sphere"] = new THREE.Sprite(material);
                     this.scene.add(point["sphere"]);
                 }
-                (<THREE.MeshPhongMaterial>point["sphere"].material).opacity = point.lifetime/point.max_lifetime;
+                (<THREE.SpriteMaterial>point["sphere"].material).opacity = point.lifetime/point.max_lifetime;
                 point["sphere"].scale.set(point.radius,point.radius,point.radius);
                 point["sphere"].position.set(this.fw*((this.W-point.position.x)/this.W)-(this.fw/2), this.fh*((this.H-point.position.y)/this.H)-(this.fh/2), point.position.z);
             } else {
@@ -76,7 +89,7 @@ export class Poor2DRenderer {
     W: number;
     H: number;
 
-    constructor(canvas: HTMLCanvasElement, W: number, H: number) {
+    constructor(canvas: HTMLCanvasElement, W: number, H: number, D: number) {
         this.canvas = canvas;
         this.canvas.width = W;
         this.canvas.height = H;

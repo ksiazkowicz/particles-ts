@@ -6,26 +6,28 @@ import { Poor2DRenderer, WebGLRender } from './modules/renderer';
 
 var MAX_TIME: number = 120;
 
-var W: number = 1024, H: number = 700, D: number = 1000;
+var W: number = window.innerWidth-16, H: number = 700, D: number = 60;
 var dt = 0.1;
 
 // przygotowanie do rysowania
-var renderer = new WebGLRender(<HTMLCanvasElement>document.getElementById('mycanvas'), W, H);
+var renderer = new WebGLRender(<HTMLCanvasElement>document.getElementById('mycanvas'), W, H, D);
 var points = Array<Point>();
 
 var emitters = Array<Emitter>();
-emitters.push(new Emitter(new Vector3d(W/2, H/2, 0), new Vector3d(-5, 2, 0), 5, 10, MAX_TIME));
-emitters.push(new Emitter(new Vector3d(W/2, H/2, 0), new Vector3d(5, 2, 0), 5, 10, MAX_TIME));
+emitters.push(new Emitter(new Vector3d(W/2, H/2, 0), new Vector3d(-5, 2, 0), 0.5, 4, MAX_TIME));
+emitters.push(new Emitter(new Vector3d(W/2, H/2, 0), new Vector3d(5, 2, 0), 0.5, 4, MAX_TIME));
 
-var viscosity = 0.00001;
+var viscosity = 0.00005;
 
 function generate(factor: number) {
     for (let emitter of emitters) {
-        emitter.time_to_change = 5-factor*100;
-        emitter.max_size = 10 + 5*(factor*20);
-        let point = emitter.generate();
-        points.push(point);
-        point.accelerate(new Vector3d(emitter.initial_velocity.x*factor*100*5, random(-20, 20)*factor*100, 0));
+        console.log(factor);
+        emitter.lifetime = MAX_TIME*(0.5-factor);
+        for (var i=0; i<2*factor*100; i++) {
+            let point = emitter.generate();
+            points.push(point);
+            point.accelerate(new Vector3d(emitter.initial_velocity.x*factor*random(-20,20), random(-1,1)*factor*2000, 0));
+        }
     }
 }
 
@@ -49,21 +51,24 @@ seek.addEventListener("mouseup", () => {
 el.addEventListener('timeupdate', () => {
     seek.max = String(el.duration);
     seek.value = String(el.currentTime);
+
+    analyser.getFloatTimeDomainData(dataArray);
+
+    if (el.currentTime % 2 > 0.6) {
+        var slice_count = 4;
+        var slice_size = bufferLength/slice_count;
+        for (var j=0; j<slice_count; j+=1) {
+            let slice = dataArray.slice(j*slice_size, (j+1)*slice_size);
+            let factor = slice.reduce(function(a,b) {return Math.abs(a)+Math.abs(b); })/slice_size;
+            if (factor > 0.001) generate(factor);
+        }
+    }
 });
 
 var loop = function() 
 {
-    // capture audio data
-    analyser.getFloatTimeDomainData(dataArray);
-
     // call renderer
     renderer.render(points);
-
-    for (var j=0; j<bufferLength/10; j+=bufferLength/10) {
-        let slice = dataArray.slice(j*(bufferLength/10), (j+1)*(bufferLength/10));
-        let factor = slice.reduce(function(a,b) {return Math.abs(a)+Math.abs(b); })/(bufferLength/10);
-        if (factor > 0.005) generate(factor);
-    }
 
     // handle physics
     let i = 0;
