@@ -1,0 +1,13 @@
+canvas { position: absolute; top: 0px; left: 0px; }
+.audio-controls { color: #fff; padding: 20px; position: absolute; bottom: 0px; left: 0px; right: 0px; height: 64px; background-color: rgba(0,0,0,0.8); }
+#seek { width: 100%; }
+.audio-controls.playing .fa-play { display: none; }
+.audio-controls.playing .fa-pause { display: initial !important; }
+.audio-controls .fa-pause { display: none; }
+.audio-controls .buttons {
+    line-height: 48px;
+    text-align: center;
+    margin-top: 16px;
+}
+.play-btn { color: #aaa; }
+.play-btn:hover { color: #fff; }

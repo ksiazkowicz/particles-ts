@@ -4,49 +4,84 @@ import { Point } from "./point";
 import * as THREE from 'three';
 
 
-export class WebGLRender {
+export class BaseRenderer {
+    /**
+     * Base class for all renderers. Keeps common logic.
+     */
     canvas: HTMLCanvasElement;
-    renderer: THREE.WebGLRenderer;
-    camera: THREE.Camera;
-    scene: THREE.Scene;
-    fw: number;
-    fh: number;
-    W: number;
-    H: number;
-    D: number;
-    texture_loader: THREE.TextureLoader;
-    glow: THREE.Texture;
+    W: number = window.innerWidth;
+    H: number = window.innerHeight;
+    D: number = 60;
 
-    constructor(canvas: HTMLCanvasElement, W: number, H: number, D: number) {
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        this.renderer = new THREE.WebGLRenderer({canvas: canvas});
-        this.renderer.setPixelRatio( window.devicePixelRatio);
-        this.renderer.setSize(W, H);
+    }
+
+    resize(W: number, H: number, D: number) {
         this.W = W;
         this.H = H;
         this.D = D;
-        let fov = 75;
+        this.setupRenderer();
+        this.initCamera();
+    }
 
-        this.texture_loader =  new THREE.TextureLoader();
+    setupRenderer() {
+        console.log("Dummy setupRenderer() called");
+    }
+
+    initCamera() {
+        console.log("Dummy initCamera() called");
+    }
+
+    render(points: Array<Point>): void {
+        console.log("Dummy render function called");
+    }
+}
+
+
+export class WebGLRender extends BaseRenderer {
+    renderer: THREE.WebGLRenderer;
+    camera: THREE.Camera;
+    scene: THREE.Scene = new THREE.Scene();
+    fw: number;
+    fh: number;
+    texture_loader: THREE.TextureLoader = new THREE.TextureLoader();
+    glow: THREE.Texture;
+    spotlight: THREE.SpotLight;
+    distance: number;
+    fov: number = 75;
+
+    setupRenderer() {
+        if (this.renderer == undefined) {
+            this.renderer = new THREE.WebGLRenderer({canvas: this.canvas});
+        }
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(this.W, this.H);
+    }
+
+    initCamera() {
+        let aspect = this.W / this.H;
+        this.camera = new THREE.PerspectiveCamera(this.fov, aspect, 0.1, 1000);
+
+        this.distance = this.D / 2;
+        this.fh = 2.0 * this.distance * Math.tan(this.fov * 0.5 * (Math.PI/180));
+        this.fw = this.fh * aspect;
+        this.camera.position.set(0, 0, this.distance);
+    }
+
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas);
+        this.setupRenderer();
+        this.initCamera();
+
         this.glow = this.texture_loader.load('textures/glow.png')
 
-        this.scene = new THREE.Scene();
-        let aspect = this.renderer.context.canvas.width / this.renderer.context.canvas.height;
-
         this.scene.add(new THREE.HemisphereLight(0xffffff,0xffffff,1.0));
-        //this.scene.add(new THREE.AmbientLight("rgb(200, 32, 60)"));
-        this.camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 1000);
 
-        let distance = D/2;
-        this.fh = 2.0 * distance * Math.tan(fov * 0.5 * (Math.PI/180));
-        this.fw = this.fh * aspect;
-        this.camera.position.set(0, 0, distance);
-
-        var spotLight = new THREE.SpotLight( 0xffffff );
-        spotLight.position.set(0, 0, distance);
-        spotLight.castShadow = true;
-        this.scene.add( spotLight );
-
+        this.spotlight = new THREE.SpotLight( 0xffffff );
+        this.spotlight.position.set(0, 0, this.distance);
+        this.spotlight.castShadow = true;
+        this.scene.add(this.spotlight);
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -76,22 +111,24 @@ export class WebGLRender {
     }
 }
 
-export class Poor2DRenderer {
+export class Poor2DRenderer extends BaseRenderer {
     /**
      *  Basic, HTML Canvas renderer (2D)
      */
-    canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
-    W: number;
-    H: number;
 
-    constructor(canvas: HTMLCanvasElement, W: number, H: number, D: number) {
-        this.canvas = canvas;
-        this.canvas.width = W;
-        this.canvas.height = H;
-        this.W = this.canvas.width;
-        this.H = this.canvas.height;
-        this.context = canvas.getContext("2d");
+    setupRenderer() {
+        this.canvas.width = this.W;
+        this.canvas.height = this.H;
+        this.context = this.canvas.getContext("2d");
+    }
+
+    initCamera() {}
+
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas);
+        this.setupRenderer();
+        this.initCamera();
     }
 
     draw(point: Point): void {

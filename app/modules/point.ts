@@ -21,6 +21,13 @@ export class Point {
         this.max_lifetime = lifetime;
     }
 
+    die(death_speed: number) {
+        let life_left = Math.abs(this.lifetime - this.max_lifetime);
+        let death_factor = (Math.floor((-Math.pow(life_left, 2))/(this.max_lifetime*death_speed)));
+        death_factor = death_factor > 1 ? death_factor : 1;
+        this.lifetime -= death_factor;
+    }
+
     setColor(r: number, g: number, b: number): void {
         this.color = new Color(r, g, b);
     }

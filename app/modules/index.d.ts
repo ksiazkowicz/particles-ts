@@ -85,13 +85,15 @@ declare module 'modules/renderer' {
 
     export class WebGLRenderer {
         canvas: HTMLCanvasElement;
-        constructor(canvas: HTMLCanvasElement, W: number, H: number);
+        constructor(canvas: HTMLCanvasElement);
+        resize(W: number, H: number, D: number): void;
         render(points: Array<Point>): void;
     }
 
     export class Poor2DRenderer {
         canvas: HTMLCanvasElement;
-        constructor(canvas: HTMLCanvasElement, W: number, H: number);
+        constructor(canvas: HTMLCanvasElement);
+        resize(W: number, H: number, D: number): void;
         render(points: Array<Point>): void;
     }
 }

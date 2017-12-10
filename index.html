@@ -1,15 +1,19 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="app.css">
+    <title>65daysofparticlesystems</title>
 </head>
 <body>
-    <canvas id="mycanvas" width="200" height="200" onclick="q()"></canvas>
-    <style type="text/css">
-        canvas { border: 1px solid rgb(0,0,0); }
-    </style>
-    <br>
-    <audio id="audio" src="moreimperfect.mp3"></audio>
-    <input type="range" id="seek" value="0" style="width: 100%" max=""/>
+    <canvas id="mycanvas"></canvas>
+    <div class="audio-controls">
+        <audio id="audio" src="tiger.mp3"></audio>
+        <input type="range" id="seek" value="0" max=""/>
+        <div class="buttons">
+            <a href="#" class="play-btn"><i class="fas fa-2x fa-play"></i><i class="fas fa-2x fa-pause"></i></a>
+        </div>
+    </div>
     <script type="text/javascript" src="build/main.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
 </body>
 </html>
