@@ -101,10 +101,9 @@ class Application {
     renderer: any;
     use_2d: number;
 
-    MAX_TIME: number = 20;
-    point_cap: number = 5000;
-    base_point_cap: number = 5000;
-    dt: number = 0.5;
+    MAX_TIME: number = 80;
+    point_cap: number = 1000;
+    dt: number = 0.1;
 
     emitters: Array<Emitter> = Array<Emitter>();
     points: Array<Point> = Array<Point>();
@@ -121,14 +120,13 @@ class Application {
         // connect resize event
         window.addEventListener('resize', () => {
             this.renderer.resize(window.innerWidth, window.innerHeight, this.renderer.D);
-        }, false );
+        }, false);
     }
 
     simulatePhysics() {
         let factor = (this.audio.sumAbs(undefined)/10);
         let viscosity = factor * viscosity_factor;
         this.dt = 0.1 * factor;
-        this.point_cap = this.base_point_cap*(factor/10);
         let death_factor = this.points.length / this.point_cap;
 
         for (let point of this.points) {
@@ -137,7 +135,7 @@ class Application {
 
             let center_drag_v = point.position.subtract(new Vector3d(this.renderer.W/2, this.renderer.H/2, 0));
             let k = 1/(center_drag_v.length());
-            point.accelerate(drag.add(center_drag_v.multiply(k*k).multiply(-10)));
+            point.accelerate(drag.add(center_drag_v.multiply(k*k).multiply(-20)));
 
             if (point.exitingY(this.renderer.H)) point.bounceY();
             if (point.exitingX(this.renderer.W)) point.bounceX();
@@ -166,7 +164,7 @@ class Application {
             for (var i=0; i<2*factor*100; i++) {
                 let point = emitter.generate();
                 this.points.push(point);
-                point.accelerate(new Vector3d(emitter.initial_velocity.x*speed_factor*random(-20,20), random(-1,1)*speed_factor*200, random(-40, 40)));
+                point.accelerate(new Vector3d(emitter.initial_velocity.x*speed_factor*random(-20,20), random(-1,1)*speed_factor*200, random(-5, 5)));
             }
         }
     }
@@ -174,7 +172,7 @@ class Application {
     audioDependentGenerator() {
         this.audio.captureAudioData();
         
-        if (this.audio.audioElement.currentTime % 2 > 0.2) {
+        if (this.audio.audioElement.currentTime % 2 > (this.points.length / this.point_cap)) {
             var slice_count = 4;
             for (var j=0; j<slice_count; j+=1) {
                 let factor = this.audio.meanAbs(this.audio.slice(slice_count, j));
