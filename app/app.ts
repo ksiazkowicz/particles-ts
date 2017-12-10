@@ -102,7 +102,8 @@ class Application {
     use_2d: number;
 
     MAX_TIME: number = 20;
-    point_cap: number = 2000;
+    point_cap: number = 5000;
+    base_point_cap: number = 5000;
     dt: number = 0.5;
 
     emitters: Array<Emitter> = Array<Emitter>();
@@ -127,6 +128,7 @@ class Application {
         let factor = (this.audio.sumAbs(undefined)/10);
         let viscosity = factor * viscosity_factor;
         this.dt = 0.1 * factor;
+        this.point_cap = this.base_point_cap*(factor/10);
         let death_factor = this.points.length / this.point_cap;
 
         for (let point of this.points) {
@@ -164,7 +166,7 @@ class Application {
             for (var i=0; i<2*factor*100; i++) {
                 let point = emitter.generate();
                 this.points.push(point);
-                point.accelerate(new Vector3d(emitter.initial_velocity.x*speed_factor*random(-20,20), random(-1,1)*speed_factor*2000, 0));
+                point.accelerate(new Vector3d(emitter.initial_velocity.x*speed_factor*random(-20,20), random(-1,1)*speed_factor*200, random(-40, 40)));
             }
         }
     }
