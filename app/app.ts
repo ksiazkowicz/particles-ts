@@ -101,9 +101,8 @@ class Application {
     renderer: any;
     use_2d: number;
 
-    MAX_TIME: number = 80;
+    MAX_TIME: number = 20;
     point_cap: number = 1000;
-    dt: number = 0.1;
 
     emitters: Array<Emitter> = Array<Emitter>();
     points: Array<Point> = Array<Point>();
@@ -126,16 +125,16 @@ class Application {
     simulatePhysics() {
         let factor = (this.audio.sumAbs(undefined)/10);
         let viscosity = factor * viscosity_factor;
-        this.dt = 0.1 * factor;
+        let dt = 0.01 * factor;
         let death_factor = this.points.length / this.point_cap;
 
         for (let point of this.points) {
-            point.move(this.dt);
+            point.move(dt);
             let drag = point.velocity.multiply(point.radius*Math.PI*(-6)*viscosity);
 
             let center_drag_v = point.position.subtract(new Vector3d(this.renderer.W/2, this.renderer.H/2, 0));
             let k = 1/(center_drag_v.length());
-            point.accelerate(drag.add(center_drag_v.multiply(k*k).multiply(-20)));
+            point.accelerate(drag.add(center_drag_v.multiply(k*k).multiply(-10*factor)));
 
             if (point.exitingY(this.renderer.H)) point.bounceY();
             if (point.exitingX(this.renderer.W)) point.bounceX();
@@ -161,10 +160,10 @@ class Application {
             }
             let speed_factor: number = this.points.length / this.point_cap;
             emitter.lifetime = (this.MAX_TIME*(10*factor))*(1/speed_factor);
-            for (var i=0; i<2*factor*100; i++) {
+            for (var i=0; i<factor*50; i++) {
                 let point = emitter.generate();
                 this.points.push(point);
-                point.accelerate(new Vector3d(emitter.initial_velocity.x*speed_factor*random(-20,20), random(-1,1)*speed_factor*200, random(-5, 5)));
+                point.accelerate(new Vector3d(emitter.initial_velocity.x, emitter.initial_velocity.y*random(-1,1), random(-1, 1)*0.1));
             }
         }
     }
