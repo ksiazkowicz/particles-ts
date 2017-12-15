@@ -1,8 +1,14 @@
 # particles-ts
 
+## Dependencies
+You need node.js installed. Run `npm install` in your favorite terminal.
+
 ## Build
 `npm run build`
 for dev use `npm run build-watch`
 
 ## Run
 Just open `index.html`
+
+## Demo
+Demo available at https://krojony.pl/imperfect
